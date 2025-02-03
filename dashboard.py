@@ -1,227 +1,217 @@
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, callback
 import pandas as pd
 import plotly.express as px
+import dash_bootstrap_components as dbc
 
 # Load the data
 data = pd.read_csv("apple_sales_2024.csv")
 
-# Initialize the Dash app
-app = Dash(__name__)
+# Initialize the Dash app with Bootstrap theme
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 app.title = "Apple Sales Dashboard 2024"
 
-# Layout of the dashboard
-app.layout = html.Div([
-    html.Div([
-        html.H1("Apple Product Sales and Revenue Dashboard", className="header-title"),
-        html.P("Explore product sales and revenue data by region and state.", className="header-description"),
-    ], className="header"),
+#  Colors
+CUSTOM_COLORS = {
+    'background': '#0a0a0a',
+    'card-bg': '#1a1a1a',
+    'text': '#ffffff',
+    'accent': '#00FF88',
+    'header-gradient': 'linear-gradient(145deg, #0a0a0a 0%, #007BFF 100%)'
+}
 
-    html.Div([
-        html.Div([
-            html.Label("Select a Region:", className="label"),
-            dcc.Dropdown(
-                id='region-dropdown',
-                options=[{'label': region, 'value': region} for region in data['Region'].unique()],
-                value=data['Region'].unique()[0],
-                clearable=False,
-                className="dropdown"
-            ),
+# Header with gradient
+header = dbc.Row([
+    dbc.Col([
+        html.H1("Apple Product Analytics 2024", className="display-4 mb-4", style={'color': CUSTOM_COLORS['accent']}),
+        html.P("Sales & Revenue Dashboard", className="lead", style={'color': CUSTOM_COLORS['text']}),
+    ], className="text-center py-5", style={'background': CUSTOM_COLORS['header-gradient']})
+])
 
-            html.Label("Select States:", className="label"),
-            dcc.Checklist(
-                id='state-checklist',
-                options=[],  # Dynamically updated
-                inline=False,
-                className="checklist"
-            ),
+# Key Metrics Cards
+def create_metric_card(metric_id, title):
+    return dbc.Card([
+        dbc.CardBody([
+            html.H5(title, className="card-title", style={'color': CUSTOM_COLORS['accent']}),
+            html.H2("0", id=metric_id, className="card-text", style={'color': CUSTOM_COLORS['text']})
+        ])
+    ], className="shadow-lg", style={'backgroundColor': CUSTOM_COLORS['card-bg']})
 
-            # Display total revenue for the region
-            html.Div(id='total-revenue', className="total-revenue")
-        ], className="sidebar"),
+metrics_row = dbc.Row([
+    dbc.Col(create_metric_card("total-sales", "Total Sales (Units)"), md=3),
+    dbc.Col(create_metric_card("total-revenue", "Total Revenue"), md=3),
+    dbc.Col(create_metric_card("avg-revenue", "Avg. Revenue/State"), md=3),
+    dbc.Col(create_metric_card("top-product", "Top Product"), md=3),
+], className="mb-4 g-4")
 
-        html.Div([
-            dcc.Graph(id='sales-graph', className="graph"),
-            dcc.Graph(id='revenue-graph', className="graph")
-        ], className="main-content")
-    ], className="dashboard-container")
-], className="app-container")
+# Controls with Checkboxes
+controls = dbc.Card([
+    dbc.CardBody([
+        html.H4("Filters", className="card-title mb-4", style={'color': CUSTOM_COLORS['accent']}),
+        dbc.Label("Select Region:", className="mb-2", style={'color': CUSTOM_COLORS['text']}),
+        dcc.Dropdown(
+            id='region-dropdown',
+            options=[{'label': r, 'value': r} for r in data['Region'].unique()],
+            value=data['Region'].unique()[0],
+            clearable=False,
+            className="mb-4",
+            style={'backgroundColor': CUSTOM_COLORS['card-bg'], 'color': 'black'}
+        ),
+        dbc.Label("Select States:", className="mb-2", style={'color': CUSTOM_COLORS['text']}),
+        dcc.Checklist(
+            id='state-checklist',
+            options=[],
+            inline=False,
+            className="mb-4",
+            labelStyle={'display': 'block', 'color': CUSTOM_COLORS['text']},
+            inputStyle={'marginRight': '10px', 'accentColor': CUSTOM_COLORS['accent']}
+        ),
+        html.Div(id='state-selection-info', className="small", style={'color': CUSTOM_COLORS['text']})
+    ])
+], className="shadow-lg", style={'backgroundColor': CUSTOM_COLORS['card-bg']})
 
-# Add external CSS for themes and styles
-app.css.append_css({
-    "external_url": "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-})
+app.layout = dbc.Container([
+    header,
+    metrics_row,
+    dbc.Row([
+        dbc.Col(controls, md=3, className="mb-4"),
+        dbc.Col([
+            dbc.Tabs([
+                dbc.Tab(
+                    dcc.Graph(id='sales-graph', className="border-0"),
+                    label="Sales Analysis",
+                    tabClassName="flex-grow-1 text-center",
+                    label_style={'color': CUSTOM_COLORS['accent']}
+                ),
+                dbc.Tab(
+                    dcc.Graph(id='revenue-graph', className="border-0"),
+                    label="Revenue Analysis",
+                    tabClassName="flex-grow-1 text-center",
+                    label_style={'color': CUSTOM_COLORS['accent']}
+                )
+            ]),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id='product-mix', className="border-0"), md=6),
+                dbc.Col(dcc.Graph(id='revenue-mix', className="border-0"), md=6)
+            ], className="mt-4")
+        ], md=9)
+    ], className="g-4"),
+    html.Footer([
+        html.Div("Apple Inc. Sales Data 2024 | Dashboard by Shahid Ul Islam", 
+                className="text-center py-3", style={'color': CUSTOM_COLORS['text']})
+    ], className="mt-5", style={'borderTop': f"1px solid {CUSTOM_COLORS['accent']}"})
+], fluid=True, className="py-4", style={'backgroundColor': CUSTOM_COLORS['background']})
 
-# Custom CSS for theming and styling
-custom_css = """
-    body {
-        background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-        background-color: #2c3e50;
-    }
-
-    .app-container {
-        font-family: Arial, sans-serif;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        padding: 20px;
-        margin: 20px auto;
-        max-width: 1200px;
-    }
-
-    .header {
-        background-color: #3498db;
-        color: white;
-        padding: 20px;
-        text-align: center;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .header-title {
-        font-size: 2.5em;
-        margin: 0;
-    }
-
-    .header-description {
-        font-size: 1.2em;
-        margin: 0;
-    }
-
-    .dashboard-container {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-    }
-
-    .sidebar {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        flex: 1;
-    }
-
-    .main-content {
-        flex: 3;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .label {
-        font-weight: bold;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    .dropdown {
-        margin-bottom: 20px;
-    }
-
-    .checklist {
-        margin-bottom: 20px;
-    }
-
-    .graph {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .total-revenue {
-        margin-top: 20px;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #2c3e50;
-        text-align: center;
-    }
-"""
-
-# Attach custom CSS to the Dash app
-app.index_string = f"""
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Apple Sales Dashboard 2024</title>
-        <style>{custom_css}</style>
-    </head>
-    <body>
-        <div id="react-entry-point">{{%app_entry%}}</div>
-        <footer>
-            {{%config%}}
-            {{%scripts%}}
-            {{%renderer%}}
-        </footer>
-    </body>
-</html>
-"""
-
-# Callback to update state checklist options based on selected region
-@app.callback(
-    Output('state-checklist', 'options'),
+# Callbacks for Checklist
+@callback(
+    [Output('state-checklist', 'options'),
+     Output('state-checklist', 'value'),
+     Output('state-selection-info', 'children')],
     Input('region-dropdown', 'value')
 )
-def update_state_checklist(selected_region):
-    states = data[data['Region'] == selected_region]['State'].unique()
-    return [{'label': state, 'value': state} for state in states]
+def update_states(region):
+    states = data[data['Region'] == region]['State'].unique()
+    options = [{'label': s, 'value': s} for s in states]
+    stats = f"{len(states)} states available in {region}"
+    return options, states, stats
 
-# Callback to update graphs and total revenue
-@app.callback(
-    [Output('sales-graph', 'figure'), Output('revenue-graph', 'figure'), Output('total-revenue', 'children')],
-    [Input('region-dropdown', 'value'), Input('state-checklist', 'value')]
+# Callback Outputs 
+@callback(
+    [Output('sales-graph', 'figure'),
+     Output('revenue-graph', 'figure'),
+     Output('product-mix', 'figure'),
+     Output('revenue-mix', 'figure'),
+     Output('total-sales', 'children'),
+     Output('total-revenue', 'children'),
+     Output('avg-revenue', 'children'),
+     Output('top-product', 'children')],
+    [Input('region-dropdown', 'value'),
+     Input('state-checklist', 'value')]
 )
-def update_dashboard(selected_region, selected_states):
-    if not selected_states:
-        selected_states = data[data['Region'] == selected_region]['State'].unique()
-
-    # Filter data for the selected region and states
-    filtered_data = data[(data['Region'] == selected_region) & (data['State'].isin(selected_states))]
-
-    # Sales by product for the selected region and states
-    sales_data = pd.melt(
-        filtered_data,
-        id_vars=['Region', 'State'],
-        value_vars=[
-            'iPhone Sales (in million units)',
-            'iPad Sales (in million units)',
-            'Mac Sales (in million units)',
-            'Wearables (in million units)'
-        ],
-        var_name='Product',
-        value_name='Sales'
-    )
-
+def update_all(region, states):
+    if not states:
+        states = data[data['Region'] == region]['State'].unique()
+    
+    filtered_data = data[(data['Region'] == region) & (data['State'].isin(states))]
+    
+    # Sales Analysis
     sales_fig = px.bar(
-        sales_data,
-        x='Product',
-        y='Sales',
-        color='State',
-        title=f'Sales by Product in {selected_region}',
-        labels={'Sales': 'Sales (in million units)', 'Product': 'Product Type'},
+        filtered_data.melt(id_vars=['State'], 
+                         value_vars=[c for c in data.columns if 'Sales' in c],
+                         var_name='Product', value_name='Sales'),
+        x='Product', y='Sales', color='State',
         template='plotly_dark',
+        color_discrete_sequence=px.colors.qualitative.Pastel,
+        title="Product Sales Distribution"
+    ).update_layout(
+        plot_bgcolor=CUSTOM_COLORS['card-bg'],
+        paper_bgcolor=CUSTOM_COLORS['background'],
+        font={'color': CUSTOM_COLORS['text']},
         barmode='group',
+        height=500
     )
-
-    # Revenue by state in the region
-    revenue_fig = px.bar(
-        filtered_data,
-        x='State',
-        y='Services Revenue (in billion $)',
-        title=f'Revenue by State in {selected_region}',
-        color='State',
-        labels={'Services Revenue (in billion $)': 'Revenue (in billion $)', 'State': 'State'},
+    
+    # Revenue Analysis
+    revenue_fig = px.line(
+        filtered_data.groupby('State', as_index=False)['Services Revenue (in billion $)'].sum(),
+        x='State', y='Services Revenue (in billion $)',
         template='plotly_dark',
-        barmode='stack'
+        color_discrete_sequence=[CUSTOM_COLORS['accent']],
+        title="Revenue Trend by State"
+    ).update_layout(
+        plot_bgcolor=CUSTOM_COLORS['card-bg'],
+        paper_bgcolor=CUSTOM_COLORS['background'],
+        font={'color': CUSTOM_COLORS['text']},
+        height=500
+    ).update_traces(mode='markers+lines')
+    
+    #revenue mix
+    revenue_mix = px.pie(
+        filtered_data.groupby('State', as_index=False)['Services Revenue (in billion $)'].sum(),
+        names='State', values='Services Revenue (in billion $)',
+        hole=0.4,
+        color_discrete_sequence=px.colors.qualitative.Pastel,
+        title="Revenue Distribution by State"
+    ).update_layout(
+        plot_bgcolor=CUSTOM_COLORS['card-bg'],
+        paper_bgcolor=CUSTOM_COLORS['background'],
+        font={'color': CUSTOM_COLORS['text']},
+        height=400,
+        width=400
+    )
+    
+    # Product Mix
+    product_mix = px.pie(
+        filtered_data.melt(value_vars=[c for c in data.columns if 'Sales' in c],
+                         var_name='Product', value_name='Sales'),
+        names='Product', values='Sales',
+        hole=0.4,
+        color_discrete_sequence=px.colors.qualitative.Pastel,
+        title="Product Sales Distribution by State"
+    ).update_layout(
+        plot_bgcolor=CUSTOM_COLORS['card-bg'],
+        paper_bgcolor=CUSTOM_COLORS['background'],
+        font={'color': CUSTOM_COLORS['text']},
+        height=500,
+        width=500
+    )
+    
+    
+    # Metrics Calculations
+    total_sales = filtered_data[[c for c in data.columns if 'Sales' in c]].sum().sum()
+    total_rev = filtered_data['Services Revenue (in billion $)'].sum()
+    avg_rev = total_rev / len(states) if states else 0
+    top_product = filtered_data[[c for c in data.columns if 'Sales' in c]].sum().idxmax()
+    
+    return (
+        sales_fig, 
+        revenue_fig,
+        revenue_mix,
+        product_mix,
+        f"{total_sales:,.2f}M",
+        f"${total_rev:,.2f}B",
+        f"${avg_rev:,.2f}B",
+        top_product.split(' ')[0]
     )
 
-    # Calculate total revenue for the selected region
-    total_revenue = filtered_data['Services Revenue (in billion $)'].sum()
-    total_revenue_display = f"Total Services Revenue for {selected_region}: ${total_revenue:.2f} billion"
-
-    return sales_fig, revenue_fig, total_revenue_display
-
-# Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
-
