@@ -19,6 +19,8 @@ Follow these steps to run the dashboard locally:
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/Comprehensive-Data-Analysis-Visualization-of-Apple-Product-Sales.git
+```
+```bash
 cd Comprehensive-Data-Analysis-Visualization-of-Apple-Product-Sales
 ```
 ### 2. Install Dependencies: Make sure Python is installed on your system. Then, install the required packages:
