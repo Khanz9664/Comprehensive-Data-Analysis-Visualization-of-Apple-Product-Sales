@@ -6,3 +6,5 @@ seaborn==0.12.2
 plotly==5.15.0
 dash==2.12.0
 dash-bootstrap-components==1.4.1
+streamlit==1.41.1
+scipy==1.11.4
