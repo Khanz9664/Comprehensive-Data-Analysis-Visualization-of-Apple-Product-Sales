@@ -10,6 +10,22 @@ This Python project analyzes Apple product sales data and builds predictive mode
 - Hyperparameter tuning
 - Interactive dashboard for visualization and insights
 
+
+-----
+
+## Screenshots (Dashboard)
+
+![Screenshot](images/1.png)
+![Screenshot](images/2.png)
+![Screenshot](images/3.png)
+![Screenshot](images/4.png)
+![Screenshot](images/5.png)
+![Screenshot](images/6.png)
+![Screenshot](images/7.png)
+![Screenshot](images/8.png)
+![Screenshot](images/9.png)
+![Screenshot](images/10.png)
+
 -----
 
 ## Installation and Usage
@@ -40,22 +56,6 @@ python3 -m streamlit run dash.py
 ```bash
 http://localhost:8501
 ```
-
------
-
-## Screenshots (Dashboard)
-
-![Screenshot](images/1.png)
-![Screenshot](images/2.png)
-![Screenshot](images/3.png)
-![Screenshot](images/4.png)
-![Screenshot](images/5.png)
-![Screenshot](images/6.png)
-![Screenshot](images/7.png)
-![Screenshot](images/8.png)
-![Screenshot](images/9.png)
-![Screenshot](images/10.png)
-
------
+----
 
 ### Contributions are welcome! Feel free to fork the repository and submit a pull request.
