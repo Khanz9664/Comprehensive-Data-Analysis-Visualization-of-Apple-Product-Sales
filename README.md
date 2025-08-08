@@ -43,7 +43,7 @@ http://localhost:8501
 
 -----
 
-## Screenshots
+## Screenshots (Dashboard)
 
 ![Screenshot](images/1.png)
 ![Screenshot](images/2.png)
