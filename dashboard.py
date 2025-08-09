@@ -215,9 +215,9 @@ def load_and_process_data(path):
         # --- Feature Engineering ---
         # We create new, meaningful columns from the existing data.
         # This helps reveal deeper insights.
-        df['Total_Hardware_Sales'] = df['iPhone_Sales'] + df['iPad_Sales'] + df['Mac_Sales'] + df['Wearables_Sales']
-        df['Revenue_Per_Unit'] = df['Services_Revenue'] / df['Total_Hardware_Sales']
-        df['iPhone_Market_Share'] = df['iPhone_Sales'] / df['Total_Hardware_Sales'] * 100
+        df['Total_Product_Sales'] = df['iPhone_Sales'] + df['iPad_Sales'] + df['Mac_Sales'] + df['Wearables_Sales']
+        df['Revenue_Per_Unit'] = df['Services_Revenue'] / df['Total_Product_Sales']
+        df['iPhone_Market_Share'] = df['iPhone_Sales'] / df['Total_Product_Sales'] * 100
         
         # --- Data Quality Assessment ---
         # We gather some metadata about our dataset. This is useful for the Data Quality tab.
@@ -329,7 +329,7 @@ with col1:
     """, unsafe_allow_html=True)
 
 with col2:
-    total_units = filtered_df['Total_Hardware_Sales'].sum()
+    total_units = filtered_df['Total_Product_Sales'].sum()
     # We apply a different gradient to this card for visual variety.
     st.markdown(f"""
     <div class="metric-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
@@ -406,7 +406,7 @@ with tab_overview:
         st.markdown("""
         <div class="insight-box">
             <h4>Insights</h4>
-            <p>Strong positive correlation (0.7+) between hardware sales and services revenue indicates successful ecosystem lock-in strategy. This correlation analysis helps identify cross-selling opportunities and product bundling strategies.</p>
+            <p>Strong positive correlation (0.7+) between Product sales and services revenue indicates successful ecosystem lock-in strategy. This correlation analysis helps identify cross-selling opportunities and product bundling strategies.</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -477,7 +477,7 @@ with tab_geo:
         # Let the user choose which metric to display on the map.
         map_metric = st.selectbox(
             "Select Metric for Mapping",
-            ["iPhone_Sales", "Services_Revenue", "Total_Hardware_Sales", "Revenue_Per_Unit"],
+            ["iPhone_Sales", "Services_Revenue", "Total_Product_Sales", "Revenue_Per_Unit"],
             format_func=lambda x: x.replace("_", " ").title() # Makes the options look nicer (e.g., 'iPhone_Sales' -> 'Iphone Sales')
         )
         
@@ -536,7 +536,7 @@ with tab_analytics:
             region1 = st.selectbox("Select First Region", regions, key="region1")
             region2 = st.selectbox("Select Second Region", [r for r in regions if r != region1], key="region2")
             metric_to_test = st.selectbox("Select Metric to Test", 
-                                        ["iPhone_Sales", "Services_Revenue", "Total_Hardware_Sales"])
+                                        ["iPhone_Sales", "Services_Revenue", "Total_Product_Sales"])
             
             data1 = filtered_df[filtered_df['Region'] == region1][metric_to_test]
             data2 = filtered_df[filtered_df['Region'] == region2][metric_to_test]
@@ -627,7 +627,7 @@ with tab_analytics:
     with col1:
         # A scatter plot is the classic way to visualize the relationship between two continuous variables.
         x_var = st.selectbox("X-Axis Variable", 
-                           ["iPhone_Sales", "iPad_Sales", "Mac_Sales", "Total_Hardware_Sales"],
+                           ["iPhone_Sales", "iPad_Sales", "Mac_Sales", "Total_Product_Sales"],
                            key="x_var")
         y_var = st.selectbox("Y-Axis Variable", 
                            ["Services_Revenue", "Revenue_Per_Unit"],
@@ -641,7 +641,7 @@ with tab_analytics:
             x=x_var, 
             y=y_var,
             color='Region',
-            size='Total_Hardware_Sales', # Use size to encode a third dimension
+            size='Total_Product_Sales', # Use size to encode a third dimension
             hover_data=['State'],
             trendline="ols", # 'ols' adds an Ordinary Least Squares regression line
             title=f"{y_var.replace('_', ' ').title()} vs {x_var.replace('_', ' ').title()}"
@@ -724,7 +724,7 @@ with tab_segmentation:
             df_clustered,
             x='iPhone_Sales',
             y='Services_Revenue',
-            z='Total_Hardware_Sales',
+            z='Total_Product_Sales',
             color='Cluster_Name',
             size='Revenue_Per_Unit', # Use marker size to encode a 4th dimension
             hover_data=['State', 'Region'],
@@ -1051,11 +1051,11 @@ with tab_quality:
         else:
             st.success(" **Region Names are Consistent**")
 
-        # A logical check: total hardware sales should correlate positively with services.
-        if df['Total_Hardware_Sales'].corr(df['Services_Revenue']) < 0.3:
-            st.warning(" **Weak Hardware-Service Correlation**")
+        # A logical check: total Product sales should correlate positively with services.
+        if df['Total_Product_Sales'].corr(df['Services_Revenue']) < 0.3:
+            st.warning(" **Weak Product-Service Correlation**")
         else:
-            st.success(" **Logical Hardware-Service Correlation**")
+            st.success(" **Logical Product-Service Correlation**")
 
 
 # --- Footer ---
@@ -1089,3 +1089,4 @@ html_footer = """
 """
 
 st.markdown(html_footer, unsafe_allow_html=True)
+
