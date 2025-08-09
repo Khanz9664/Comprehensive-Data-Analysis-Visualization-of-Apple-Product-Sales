@@ -34,7 +34,7 @@ Follow these steps to run the dashboard locally:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/Comprehensive-Data-Analysis-Visualization-of-Apple-Product-Sales.git
+git clone https://github.com/Khanz9664/Comprehensive-Data-Analysis-Visualization-of-Apple-Product-Sales.git
 ```
 ```bash
 cd Comprehensive-Data-Analysis-Visualization-of-Apple-Product-Sales
