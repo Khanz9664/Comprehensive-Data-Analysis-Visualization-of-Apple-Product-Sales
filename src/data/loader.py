@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-@st.cache_data
+@st.cache_data(ttl=3600, show_spinner=False)
 def load_data(path: str) -> pd.DataFrame:
     """Loads data from a CSV and performs initial cleaning."""
     try:
@@ -18,6 +18,7 @@ def load_data(path: str) -> pd.DataFrame:
         st.error(f"Error loading data: {str(e)}")
         return None
 
+@st.cache_data(ttl=3600, show_spinner=False)
 def get_data_quality(df: pd.DataFrame) -> dict:
     """Calculates data quality metrics on the dataframe."""
     if df is None:

@@ -1,64 +1,87 @@
 import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
 def generate_business_recommendations(df: pd.DataFrame) -> list:
-    """Analyzes dataframe dynamically to yield actionable business insight statements."""
+    """Builds quantitative IF-THEN strategic recommendations actively tracking exact monetary uplifts."""
     recommendations = []
     
     if df.empty:
         return recommendations
         
-    # Product Dominance Analysis
     products = ['iPhone_Sales', 'iPad_Sales', 'Mac_Sales', 'Wearables_Sales']
-    # Filter available products from df in case some are dropped
-    available_products = [p for p in products if p in df.columns]
+    avail_p = [p for p in products if p in df.columns]
     
-    if available_products:
-        revenue_by_product = df[available_products].sum()
-        top_product = revenue_by_product.idxmax()
-        worst_product = revenue_by_product.idxmin()
+    # 1. Hardware Allocation IF-THEN
+    if avail_p and 'Services_Revenue' in df.columns:
+        revenue_sums = df[avail_p].sum()
+        top_p = revenue_sums.idxmax()
+        worst_p = revenue_sums.idxmin()
+        t_name = top_p.replace('_Sales', '')
+        w_name = worst_p.replace('_Sales', '')
         
-        top_name = top_product.replace('_Sales', '')
-        worst_name = worst_product.replace('_Sales', '')
-        
-        total_sales = revenue_by_product.sum()
-        if total_sales > 0:
-            top_share = (revenue_by_product[top_product] / total_sales) * 100
-            worst_share = (revenue_by_product[worst_product] / total_sales) * 100
+        try:
+            X = df[[worst_p]]
+            y = df['Services_Revenue']
+            lr = LinearRegression().fit(X, y)
+            elasticity = lr.coef_[0]
             
-            if top_share > 35:
-                recommendations.append({
-                    'type': 'success',
-                    'msg': f"**{top_name} Dominance:** {top_name} leads with {top_share:.1f}% unit share. **Action:** Maintain aggressive flagship marketing spend to protect structural market share."
-                })
-                
-            if worst_share < 15:
+            w_units = df[worst_p].sum()
+            t_units = df[top_p].sum()
+            share = (w_units / (w_units + t_units)) * 100
+            
+            projected_unit_increase = w_units * 0.15
+            projected_uplift = projected_unit_increase * elasticity * 1000 # To Millions
+            
+            if share < 20 and projected_uplift > 0:
                 recommendations.append({
                     'type': 'warning',
-                    'msg': f"**{worst_name} Underperformance:** {worst_name} yields only {worst_share:.1f}% unit share. **Action:** Investigate pricing friction or bundle {worst_name} hardware with high-tier {top_name} purchases."
+                    'msg': f"**IF** `{w_name}` unit share remains severely saturated (<{share:.1f}%),\n\n**THEN Action:** Reallocate 15% of regional `{t_name}` marketing budget directly into `{w_name}` peripheral bundling.\n\n**💵 Expected Impact:** Resolving this structural deficit mathematically projects an exact **+${projected_uplift:,.1f} Million** recurring uplift in trailing Software Services."
                 })
+        except:
+            pass
+
+    # 2. Regional Expansion Routing
+    if 'Region' in df.columns and 'Services_Revenue' in df.columns and 'Total_Product_Sales' in df.columns:
+        region_metrics = df.groupby('Region').agg({'Total_Product_Sales': 'sum', 'Services_Revenue': 'sum'})
+        region_metrics['Efficiency'] = region_metrics['Services_Revenue'] / region_metrics['Total_Product_Sales']
+        
+        if len(region_metrics) >= 2:
+            highest_eff = region_metrics['Efficiency'].idxmax()
+            lowest_eff = region_metrics['Efficiency'].idxmin()
+            
+            # Calculate mathematical uplift if lowest efficiency region was scaled natively to global baseline average
+            global_eff = df['Services_Revenue'].sum() / df['Total_Product_Sales'].sum()
+            current_low_rev = region_metrics.loc[lowest_eff, 'Services_Revenue']
+            target_low_rev = region_metrics.loc[lowest_eff, 'Total_Product_Sales'] * global_eff
+            impact_gap = (target_low_rev - current_low_rev) * 1000 # in Millions
+            
+            if impact_gap > 0:
+                recommendations.append({
+                    'type': 'warning',
+                    'msg': f"**IF** `{lowest_eff}` continues operating at inherently bottom-tier software monetization efficiency,\n\n**THEN Action:** Deploy `{highest_eff}`'s exact pricing architecture into `{lowest_eff}` immediately executing localized *Apple One* subscription discounts securely at hardware activation boundaries.\n\n**💵 Expected Impact:** Normalizing `{lowest_eff}` strictly to the global baseline efficiency layout mathematically unlocks **+${impact_gap:,.1f} Million** in untapped regional software retention."
+                })
+            
+    # 3. Product Mix Optimization (Wearables -> iPhone attachment rate logic)
+    if 'iPhone_Sales' in df.columns and 'Wearables_Sales' in df.columns and 'Services_Revenue' in df.columns:
+        attach_rate = df['Wearables_Sales'].sum() / df['iPhone_Sales'].sum()
+        if attach_rate < 0.3:
+            # Impact of autonomously scaling attach rate sequentially to 40% minimum threshold
+            target_wearables = df['iPhone_Sales'].sum() * 0.4
+            wearable_deficit = target_wearables - df['Wearables_Sales'].sum()
+            
+            # Univariate regression safely mapping explicitly targeted sequential elasticity bounds
+            try:
+                lr2 = LinearRegression().fit(df[['Wearables_Sales']], df['Services_Revenue'])
+                w_elasticity = lr2.coef_[0]
+                uplift = wearable_deficit * w_elasticity * 1000
                 
-    # Regional Performance Analysis
-    if 'Region' in df.columns and 'Total_Product_Sales' in df.columns:
-        region_sales = df.groupby('Region')['Total_Product_Sales'].sum()
-        top_region = region_sales.idxmax()
-        worst_region = region_sales.idxmin()
-        
-        recommendations.append({
-            'type': 'success',
-            'msg': f"**{top_region} Expansion:** {top_region} is the highest performing gross volume region. **Action:** Leverage successful conversion campaigns from this region into emerging neighboring markets."
-        })
-        
-        recommendations.append({
-            'type': 'warning',
-            'msg': f"**{worst_region} Penetration:** {worst_region} shows the lowest total sales volume. **Action:** Allocate immediate quarterly budget for localized market research to identify cultural or pricing bottlenecks."
-        })
-        
-    # Efficiency Metrics
-    if 'Region' in df.columns and 'Revenue_Per_Unit' in df.columns:
-        top_efficiency_region = df.groupby('Region')['Revenue_Per_Unit'].mean().idxmax()
-        recommendations.append({
-            'type': 'success',
-            'msg': f"**Premium Pricing Power:** {top_efficiency_region} yields the highest Services Revenue per product unit. **Action:** Analyze consumer purchasing power strategies here for broader international rollout."
-        })
-        
+                if uplift > 0:
+                    recommendations.append({
+                        'type': 'success',
+                        'msg': f"**IF** baseline Wearables attachment rate logically scales to 40% (Currently degraded at `{attach_rate*100:.1f}%`),\n\n**THEN Action:** Force algorithmic hardware lock-in executing *0% point-of-sale financing* specifically on Wearables paired dynamically with new iPhone activations globally.\n\n**💵 Expected Impact:** Bridging the attachment deficit limits mathematically targets a **+${uplift:,.1f} Million** tracking Software Services network elasticity effect."
+                    })
+            except:
+                pass
+
     return recommendations

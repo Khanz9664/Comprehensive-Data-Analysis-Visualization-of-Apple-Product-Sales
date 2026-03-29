@@ -2,77 +2,129 @@ import streamlit as st
 
 def apply_custom_css():
     st.markdown("""
-    <style>
-        /* Modern Font Injection */
+        <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        html, body, [class*="css"] {
-            font-family: 'Inter', sans-serif;
+        /* Global CSS reset applying native SaaS font boundaries */
+        html, body, [class*="css"], .stMarkdown, .stText, h1, h2, h3, h4, h5, p, div {
+            font-family: 'Inter', sans-serif !important;
         }
-        
-        .main {
-            padding-top: 1rem;
+
+        /* ---------------------------------------------------
+         * Typography Overrides
+         * --------------------------------------------------- */
+        h1, h2, h3 {
+            font-weight: 700 !important;
+            letter-spacing: -0.02em !important;
+            color: #E5E7EB !important;
         }
-        
-        /* Clean SaaS canvas - hide raw Streamlit default bars */
+
+        /* ---------------------------------------------------
+         * Hide Default UI Junk 
+         * --------------------------------------------------- */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
 
-        /* Premium Metric Cards with smooth Hovers */
+        /* Adjust global padding */
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 2rem !important;
+            max-width: 95% !important;
+        }
+
+        /* ---------------------------------------------------
+         * Native Modular "Insight Cards" (.stMetric & stVerticalBlockBorderWrapper)
+         * --------------------------------------------------- */
+        /* Metrics specifically */
         div[data-testid="stMetric"] {
-            background-color: #1A1C23;
-            border: 1px solid #2D313A;
-            padding: 1.2rem;
+            background-color: #1A1F2B;
+            border: 1px solid rgba(255,255,255,0.08); /* Soft dark border */
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            padding: 20px !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.2s ease-in-out;
         }
         div[data-testid="stMetric"]:hover {
-            border-color: #00B4D8;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,180,216,0.15);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+            border: 1px solid #6366F1; /* Primary hover glow */
         }
-        div[data-testid="stMetricValue"] {
-            color: #FFFFFF;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        
+        /* Native metric labels */
         div[data-testid="stMetricLabel"] {
-            color: #8B949E;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #9CA3AF;
+            margin-bottom: 4px;
         }
         
-        div[data-testid="stMetricDelta"] > div {
-            font-weight: 600;
+        /* Native metric values */
+        div[data-testid="stMetricValue"] {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #E5E7EB;
         }
         
-        /* Header Normalization */
-        h1, h2, h3, h4, h5, h6 {
-            color: #E6EDF3 !important;
+        /* Success / Fail metrics mapped */
+        div[data-testid="stMetricDelta"] svg {
+            /* We trust Streamlit's native pathing, but modify container context bounds if needed */
+        }
+
+        /* ---------------------------------------------------
+         * st.container() Cards Override
+         * --------------------------------------------------- */
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background-color: #1A1F2B !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            border-radius: 12px !important;
+            padding: 1rem !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+        }
+        
+        /* ---------------------------------------------------
+         * Generic Button Overrides
+         * --------------------------------------------------- */
+        button[kind="primary"] {
+            background-color: #6366F1 !important;
+            color: #ffffff !important;
+            border-radius: 8px !important;
+            border: None !important;
             font-weight: 600 !important;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.4) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        button[kind="primary"]:hover {
+            background-color: #4F46E5 !important; /* Deeper Indigo */
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.6) !important;
         }
         
-        /* Deep Dark Workspace */
-        .stApp {
-            background-color: #0D1117;
+        button[kind="secondary"] {
+            background-color: rgba(255,255,255,0.05) !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: #E5E7EB !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        button[kind="secondary"]:hover {
+            background-color: rgba(255,255,255,0.1) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+        }
+
+        /* ---------------------------------------------------
+         * Input Fields (Selectboxes, text inputs)
+         * --------------------------------------------------- */
+        .stSelectbox div[data-baseweb="select"] > div {
+            background-color: rgba(255, 255, 255, 0.05); /* Slight elevation */
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* Distinct Flat Sidebar */
-        [data-testid="stSidebar"] {
-            background-color: #161B22;
-            border-right: 1px solid #30363D;
+        /* Alerts Overrides to enforce primary/danger/success palettes correctly */
+        div[data-testid="stAlert"] {
+            border-radius: 8px !important;
+            border: None !important;
         }
-        
-        /* Dataframes embedded cleanly */
-        .stDataFrame {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #30363D;
-        }
-    </style>
+        </style>
     """, unsafe_allow_html=True)

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import Pipeline
@@ -78,6 +79,7 @@ def get_production_pipeline(model_type='linear', degree=2):
         
     return Pipeline(steps)
 
+@st.cache_resource(ttl=3600, show_spinner=False)
 def compare_models_cv(df: pd.DataFrame, feature_cols: list, target_col: str, cv_splits: int = 5):
     """Compares multiple regression models using KFold Cross-Validation and GridSearchCV."""
     X = df[feature_cols]
