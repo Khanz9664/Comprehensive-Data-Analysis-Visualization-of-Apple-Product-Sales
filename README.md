@@ -126,4 +126,6 @@ Comprehensive-Data-Analysis-Visualization/
 │
 ├── requirements.txt
 └── README.md
+└──CASE_STUDY.md
+└──Comprehensive Data Analysis and Visualization of Apple Product Sales.ipynb
 ```
