@@ -219,4 +219,5 @@ Open the URL shown in the terminal (typically `http://localhost:8501`). Use **La
 ## Related docs
 
 - **[CASE_STUDY.md](CASE_STUDY.md)** — Problem framing, design choices, and extended context.
+- **[APP_GUIDE.md](APP_GUIDE.md)** — Provide a visual walkthrough of the app.
 - **Notebook** — `Comprehensive Data Analysis and Visualization of Apple Product Sales.ipynb` for exploratory or teaching workflows alongside the app.

@@ -243,4 +243,4 @@ This distinction matters for academic integrity and portfolio reviewers: the val
 
 The project delivers a **coherent end-to-end analytics workflow** in one repository: **ingest → engineer features → explore → model → validate → export**, with a **decoupled `src/` / `app/` split** that keeps the codebase maintainable. It is best positioned as a **portfolio or teaching artifact** that demonstrates statistics, unsupervised learning, supervised regression, constrained optimization, and reproducible exports—**with clear boundaries** on what is simulated, heuristic, or illustrative versus what is standard machine learning practice.
 
-For setup and commands, see **[README.md](README.md)**. For exploratory work outside the app, see the companion notebook **`Comprehensive Data Analysis and Visualization of Apple Product Sales.ipynb`**.
+For setup and commands, see **[README.md](README.md)**. For a visual walkthrough of the app, see **[APP_GUIDE.md](APP_GUIDE.md)**. For exploratory work outside the app, see the companion notebook **`Comprehensive Data Analysis and Visualization of Apple Product Sales.ipynb`**.
