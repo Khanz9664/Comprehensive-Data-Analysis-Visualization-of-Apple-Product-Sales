@@ -1,5 +1,9 @@
 # Comprehensive Data Analysis & Visualization — Apple Product Sales
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-red?style=for-the-badge&logo=streamlit)](https://applesalesanalytics.streamlit.app/)
+
+---
+
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat&logo=python)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.42-FF4B4B?style=flat&logo=streamlit)](https://streamlit.io)
 [![Stack](https://img.shields.io/badge/stack-pandas%20%7C%20plotly%20%7C%20sklearn-2A2A2A?style=flat)]()
